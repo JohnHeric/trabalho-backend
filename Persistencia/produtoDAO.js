@@ -34,7 +34,7 @@ export default class ProdutoDAO {
         }
     }
 
-    async incluir(produto) {
+    async gravar(produto) {
         if (produto instanceof Produto) {
             const conexao = await conectar();
             const sql = `INSERT INTO produto(prod_descricao,prod_precoCusto,prod_precoVenda,prod_qtdEstoque,prod_urlImagem,prod_dataValidade, fk_codigo_cat)
