@@ -16,6 +16,7 @@ export default class ClienteCtrl {
                 //pseudo validação
                 if (nome && endereco && cidade && cep){
                     const cliente = new Cliente(0,nome, endereco, cidade,cep);
+                    //cliente.incluir()
                     cliente.incluir()
                         .then(() => {
                             resposta.status(200).json({

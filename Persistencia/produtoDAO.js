@@ -54,6 +54,7 @@ export default class ProdutoDAO {
             await conexao.release(); //libera a conexão
         }
     }
+
     async alterar(produto) {
         if (produto instanceof Produto) {
             const conexao = await conectar();
@@ -110,6 +111,7 @@ export default class ProdutoDAO {
         await conexao.release();
         return listaProdutos;
     }
+    
     async excluir(produto) {
         if (produto instanceof Produto) {
             const conexao = await conectar();

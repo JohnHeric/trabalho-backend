@@ -71,7 +71,7 @@ export default class ClienteDAO {
         let sql = "";
         let parametros = [];
         if (isNaN(parseInt(termo))) {
-            sql = `SELECT * FROM cliente c
+            sql = `SELECT * FROM cliente
                    WHERE cli_nome LIKE ?`;
             parametros = ['%' + termo + '%'];
         }
@@ -95,6 +95,7 @@ export default class ClienteDAO {
         await conexao.release();
         return listaClientes;
     }
+
     async excluir(cliente) {
         if (cliente instanceof Cliente) {
             const conexao = await conectar();
