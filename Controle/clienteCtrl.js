@@ -19,7 +19,7 @@ export default class ClienteCtrl {
                     .catch(erro => {
                         resposta.status(500).json({
                             status: false,
-                            mensagem: "Não foi possível incluir o cliente: " + erro.message,
+                            mensagem: "Não foi possível incluir o cliente: parou aqui meu jovem" + erro.message,
                         });
                     });
             } else {
