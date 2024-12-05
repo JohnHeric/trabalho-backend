@@ -22,7 +22,7 @@ export default class Cliente
         this.#nome=novoNome;
     }
 
-    get enderenco(){
+    get endereco(){
         return this.#endereco;
     }
     set endereco(novoEndereco){
