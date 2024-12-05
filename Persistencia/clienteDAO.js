@@ -26,7 +26,7 @@ export default class ClienteDAO {
         }
     }
 
-    async incluir(cliente) {
+    /*async incluir(cliente) {
         if (cliente instanceof Cliente) {
             const conexao = await conectar();
             const sql = `
@@ -43,7 +43,27 @@ export default class ClienteDAO {
             cliente.codigo = resultado[0].insertId;
             await conexao.release();
         }
-    }
+    }*/
+        async gravar(cliente) {
+            if (cliente instanceof Cliente) {
+                const conexao = await conectar();
+                const sql = `
+                INSERT INTO cliente (cli_nome, cli_endereco, cli_cidade, cli_cep, cli_telefone)
+                VALUES (?, ?, ?, ?, ?)
+                `;
+                const parametros = [
+                    cliente.nome,
+                    cliente.endereco,
+                    cliente.cidade,
+                    cliente.cep,
+                    cliente.telefone
+                ];
+                const resultado = await conexao.execute(sql, parametros);
+                cliente.codigo = resultado[0].insertId;
+                await conexao.release();
+            }
+        }
+        
 
     async alterar(cliente) {
         if (cliente instanceof Cliente) {
@@ -97,3 +117,4 @@ export default class ClienteDAO {
         }
     }
 }
+
