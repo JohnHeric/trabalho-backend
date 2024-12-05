@@ -17,7 +17,7 @@ export default class ClienteCtrl {
                 if (nome && endereco && cidade && cep){
                     const cliente = new Cliente(0,nome, endereco, cidade,cep);
                     //cliente.incluir()
-                    cliente.incluir()
+                    cliente.gravar()
                         .then(() => {
                             resposta.status(200).json({
                                 "status": true,
