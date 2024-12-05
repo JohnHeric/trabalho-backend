@@ -1,106 +1,85 @@
-import ClienteDAO from "../Persistencia/clienteDAO.js"; // Suponha que exista um ClienteDAO
+import ClienteDAO from "../Persistencia/clienteDAO.js";
 
-export default class Cliente {
-    // Atributos privados usando a sintaxe #
+export default class Cliente
+{
     #codigo;
     #nome;
     #endereco;
     #cidade;
     #cep;
-    #telefone;
 
-    // Construtor da classe
-    constructor(codigo=0, nome="", endereco="", cidade="", cep="", telefone="") {
-        this.#codigo = codigo;
-        this.#nome = nome;
-        this.#endereco = endereco;
-        this.#cidade = cidade;
-        this.#cep = cep;
-        this.#telefone = telefone;
-    }
-
-    get codigo() {
+    get codigo(){
         return this.#codigo;
     }
+    set codigo(novoCodigo){
+        this.#codigo=novoCodigo;
+    } 
 
-    set codigo(value) {
-        this.#codigo = value;
-    }
-
-    // Métodos get e set para o atributo nome
-    get nome() {
+    get nome(){
         return this.#nome;
     }
-
-    set nome(value) {
-        this.#nome = value;
+    set nome(novoNome){
+        this.#nome=novoNome;
     }
 
-    // Métodos get e set para o atributo endereco
-    get endereco() {
+    get enderenco(){
         return this.#endereco;
     }
-
-    set endereco(value) {
-        this.#endereco = value;
+    set endereco(novoEndereco){
+        this.#endereco=novoEndereco;
     }
 
-    // Métodos get e set para o atributo cidade
-    get cidade() {
+    get cidade(){
         return this.#cidade;
     }
-
-    set cidade(value) {
-        this.#cidade = value;
+    set cidade(novoCidade){
+        this.#codigo=novoCidade;
     }
 
-    // Métodos get e set para o atributo cep
-    get cep() {
+    get cep(){
         return this.#cep;
     }
-
-    set cep(value) {
-        this.#cep = value;
+    set cep(novoCep){
+        this.#cep=novoCep;
     }
 
-    // Métodos get e set para o atributo telefone
-    get telefone() {
-        return this.#telefone;
+    constructor(codigo=0, nome="", endereco="", cidade="", cep="")
+    {
+        this.#codigo=codigo;
+        this.#nome=nome;
+        this.#endereco=endereco;
+        this.#cidade=cidade;
+        this.#cep=cep;
     }
 
-    set telefone(value) {
-        this.#telefone = value;
+    toJSON()
+    {
+        return{
+            "codigo":this.#codigo,
+            "nome":this.#nome,
+            "endereco":this.#endereco,
+            "cidade":this.#cidade,
+            "cep":this.#cep
+        }
     }
 
-    // Método toJSON para conversão em JSON
-    toJSON() {
-        return {
-            "nome": this.#nome,
-            "endereco": this.#endereco,
-            "cidade": this.#cidade,
-            "cep": this.#cep,
-            "telefone": this.#telefone
-        };
-    }
-
-    // Métodos assíncronos para manipulação de dados
-    async incluir() {
+    async incluir(){
         const clienteDAO = new ClienteDAO();
         await clienteDAO.incluir(this);
     }
 
-    async consultar(termo) {
+    async consultar(termo){
         const clienteDAO = new ClienteDAO();
         return await clienteDAO.consultar(termo);
     }
 
-    async excluir() {
+    async excluir(){
         const clienteDAO = new ClienteDAO();
         await clienteDAO.excluir(this);
     }
 
-    async alterar() {
+    async alterar(){
         const clienteDAO = new ClienteDAO();
-        await clienteDAO.editar(this);
+        await clienteDAO.alterar(this);
     }
 }

@@ -1,27 +1,30 @@
+//DAO - Data Access Object
 import Cliente from "../Modelo/cliente.js";
-import conectar from "./Conexao.js";
 
+import conectar from "./Conexao.js";
 export default class ClienteDAO {
     constructor() {
         this.init();
     }
 
     async init() {
-        try {
-            const conexao = await conectar();
+        try 
+        {
+            const conexao = await conectar(); //retorna uma conexão
             const sql = `
-            CREATE TABLE IF NOT EXISTS cliente (
+            CREATE TABLE IF NOT EXISTS cliente(
                 cli_codigo INT NOT NULL AUTO_INCREMENT,
-                cli_nome VARCHAR(100) NOT NULL,
+                cli_nome VARCHAR(200) NOT NULL,
                 cli_endereco VARCHAR(200) NOT NULL,
-                cli_cidade VARCHAR(100) NOT NULL,
-                cli_cep VARCHAR(10) NOT NULL,
-                cli_telefone VARCHAR(15) NOT NULL,
-                CONSTRAINT pk_cliente PRIMARY KEY (cli_codigo)
-            )`;
+                cli_cidade VARCHAR(200) NOT NULL,
+                cli_cep VARCHAR(200) NOT NULL,
+                CONSTRAINT pk_produto PRIMARY KEY(cli_codigo)
+            )
+        `;
             await conexao.execute(sql);
             await conexao.release();
-        } catch (e) {
+        }
+        catch (e) {
             console.log("Não foi possível iniciar o banco de dados: " + e.message);
         }
     }
@@ -29,71 +32,78 @@ export default class ClienteDAO {
     async gravar(cliente) {
         if (cliente instanceof Cliente) {
             const conexao = await conectar();
-            const sql = `
-            INSERT INTO cliente (cli_nome, cli_endereco, cli_cidade, cli_cep, cli_telefone)
-            VALUES (?, ?, ?, ?, ?)`;
-            const parametros = [
+            const sql = `INSERT INTO cliente(cli_nome,cli_endereco,cli_cidade,cli_cep)
+                values(?,?,?,?,?)
+            `;
+            let parametros = [
                 cliente.nome,
                 cliente.endereco,
                 cliente.cidade,
                 cliente.cep,
-                cliente.telefone
-            ];
+            ]; //dados do produto
             const resultado = await conexao.execute(sql, parametros);
             cliente.codigo = resultado[0].insertId;
-            await conexao.release();
+            await conexao.release(); //libera a conexão
         }
     }
 
     async alterar(cliente) {
         if (cliente instanceof Cliente) {
             const conexao = await conectar();
-            const sql = `
-            UPDATE cliente SET cli_nome = ?, cli_endereco = ?, cli_cidade = ?, cli_cep = ?, cli_telefone = ?
-            WHERE cli_codigo = ?`;
-            const parametros = [
+            const sql = `UPDATE cliente SET cli_nome=?,cli_endereco=?,cli_cidade=?,cli_cep=?
+                WHERE cli_codigo = ?
+            `;
+            let parametros = [
                 cliente.nome,
                 cliente.endereco,
                 cliente.cidade,
                 cliente.cep,
-                cliente.telefone,
                 cliente.codigo
-            ];
+            ]; //dados do produto
             await conexao.execute(sql, parametros);
-            await conexao.release();
+            await conexao.release(); //libera a conexão
         }
     }
 
     async consultar(termo) {
+        //resuperar as linhas da tabela produto e transformá-las de volta em produtos
         const conexao = await conectar();
         let sql = "";
         let parametros = [];
         if (isNaN(parseInt(termo))) {
-            sql = `SELECT * FROM cliente WHERE cli_nome LIKE ?`;
-            parametros = [`%${termo}%`];
-        } else {
-            sql = `SELECT * FROM cliente WHERE cli_codigo = ?`;
+            sql = `SELECT * FROM cliente c
+                   WHERE cli_nome LIKE ?`;
+            parametros = ['%' + termo + '%'];
+        }
+        else {
+            sql = `SELECT * FROM cliente c
+                   WHERE cli_codigo = ?`
             parametros = [termo];
         }
-        const [linhas] = await conexao.execute(sql, parametros);
-        const listaClientes = linhas.map(linha => new Cliente(
-            linha.cli_nome,
-            linha.cli_endereco,
-            linha.cli_cidade,
-            linha.cli_cep,
-            linha.cli_telefone
-        ));
+        const [linhas, campos] = await conexao.execute(sql, parametros);
+        let listaClientes = [];
+        for (const linha of linhas) { 
+            const cliente = new Cliente(
+                linha['cli_codigo'],
+                linha['cli_nome'],
+                linha['cli_endereco'],
+                linha['cli_cidade'],
+                linha['cli_cep'],
+            );
+            listaClientes.push(cliente);
+        }
         await conexao.release();
         return listaClientes;
     }
-
     async excluir(cliente) {
         if (cliente instanceof Cliente) {
             const conexao = await conectar();
             const sql = `DELETE FROM cliente WHERE cli_codigo = ?`;
-            const parametros = [cliente.codigo];
+            let parametros = [
+                cliente.codigo
+            ]; //dados do produto
             await conexao.execute(sql, parametros);
-            await conexao.release();
+            await conexao.release(); //libera a conexão
         }
     }
 }

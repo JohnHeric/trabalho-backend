@@ -1,312 +1,185 @@
-/*import Cliente from "../Modelo/cliente.js";  // Presume-se que o modelo Cliente exista.
+//É a classe responsável por traduzir requisições HTTP e produzir respostas HTTP
+import Cliente from "../Modelo/cliente.js";
 
 export default class ClienteCtrl {
 
     gravar(requisicao, resposta) {
+        //preparar o destinatário que a resposta estará no formato JSON
         resposta.type("application/json");
+        //Verificando se o método da requisição é POST e conteúdo é JSON
         if (requisicao.method == 'POST' && requisicao.is("application/json")) {
-            //const { nome, endereco, cidade, cep, telefone } = requisicao.body;
             const nome = requisicao.body.nome;
             const endereco = requisicao.body.endereco;
             const cidade = requisicao.body.cidade;
             const cep = requisicao.body.cep;
-            const telefone = requisicao.body.telefone;
+          
+                //pseudo validação
+                if (nome && endereco && cidade && cep){
+                    const cliente = new Cliente(0,nome, endereco, cidade,cep);
+                    cliente.incluir()
+                        .then(() => {
+                            resposta.status(200).json({
+                                "status": true,
+                                "mensagem": "Produto adicionado com sucesso!",
+                                "codigo": cliente.codigo
+                            });
+                        })
+                        .catch((erro) => {
+                            resposta.status(500).json({
+                                "status": false,
+                                "mensagem": "Não foi possível incluir o produto: " + erro.message
+                            });
+                        });
+                }
+                else {
+                    resposta.status(400).json(
+                        {
+                            "status": false,
+                            "mensagem": "Informe corretamente todos os dados de um produto conforme documentação da API."
+                        }
+                    );
+                }
+            }
+            else {
+                resposta.status(400).json({
+                    "status": false,
+                    "mensagem": "A categoria informada não existe!"
+                });
+            }
+    }
 
+    editar(requisicao, resposta) {
+        //preparar o destinatário que a resposta estará no formato JSON
+        resposta.type("application/json");
+        //Verificando se o método da requisição é POST e conteúdo é JSON
+        if ((requisicao.method == 'PUT' || requisicao.method == 'PATCH') && requisicao.is("application/json")) {
+            //o código será extraída da URL (padrão REST)
+            const codigo = requisicao.params.codigo;
+            const nome = requisicao.body.nome;
+            const endereco = requisicao.body.endereco;
+            const cidade = requisicao.body.cidade;
+            const cep = requisicao.body.cep;
 
-            if (nome && endereco && cidade && cep && telefone) {
-                const cliente = new Cliente(nome, endereco, cidade, cep, telefone);
-                cliente.gravar()
+            //validação de regra de negócio
+            
+            if (codigo > 0 && nome && endereco && cidade && cep) {
+
+                const cliente = new Cliente(codigo, nome, endereco, cidade, cep);
+                cliente.alterar()
                     .then(() => {
                         resposta.status(200).json({
                             "status": true,
-                            "mensagem": "Cliente adicionado com sucesso!",
-                            "codigo": cliente.codigo
+                            "mensagem": "Produto alterado com sucesso!",
                         });
                     })
-                    .catch(erro => {
+                    .catch((erro) => {
                         resposta.status(500).json({
                             "status": false,
-                            "mensagem": "Não foi possível incluir o cliente: parou aqui meu jovem" + erro.message,
+                            "mensagem": "Não foi possível alterar o produto: " + erro.message
                         });
                     });
-            } else {
-                resposta.status(400).json({
-                    "status": false,
-                    "mensagem": "Informe todos os dados obrigatórios do cliente conforme documentação da API.",
-                });
             }
-        } else {
+            else {
+                resposta.status(400).json(
+                    {
+                        "status": false,
+                        "mensagem": "Informe corretamente todos os dados de um produto conforme documentação da API."
+                    }
+                );
+            }
+
+        }
+        else {
             resposta.status(400).json({
                 "status": false,
-                "mensagem": "Requisição inválida! Consulte a documentação da API.",
+                "mensagem": "Requisição inválida! Consulte a documentação da API."
             });
-        }
-    }
 
-    editar(requisicao, resposta) {
-        resposta.type("application/json");
-        if ((requisicao.method === 'PUT' || requisicao.method === 'PATCH') && requisicao.is("application/json")) {
-            const codigo = requisicao.params.codigo;
-            const { nome, endereco, cidade, cep, telefone } = requisicao.body;
-
-            if (codigo > 0 && nome && endereco && cidade && cep && telefone) {
-                const cliente = new Cliente(nome, endereco, cidade, cep, telefone);
-                cliente.codigo = codigo;
-                cliente.editar()
-                    .then(() => {
-                        resposta.status(200).json({
-                            status: true,
-                            mensagem: "Cliente atualizado com sucesso!",
-                        });
-                    })
-                    .catch(erro => {
-                        resposta.status(500).json({
-                            status: false,
-                            mensagem: "Não foi possível atualizar o cliente: " + erro.message,
-                        });
-                    });
-            } else {
-                resposta.status(400).json({
-                    status: false,
-                    mensagem: "Informe corretamente todos os dados do cliente conforme a documentação da API.",
-                });
-            }
-        } else {
-            resposta.status(400).json({
-                status: false,
-                mensagem: "Requisição inválida! Consulte a documentação da API.",
-            });
         }
     }
 
     excluir(requisicao, resposta) {
+        //preparar o destinatário que a resposta estará no formato JSON
         resposta.type("application/json");
-        if (requisicao.method === 'DELETE') {
+        //Verificando se o método da requisição é POST e conteúdo é JSON
+        if (requisicao.method == 'DELETE') {
+            //o código será extraída da URL (padrão REST)
             const codigo = requisicao.params.codigo;
+            //pseudo validação
             if (codigo > 0) {
-                const cliente = new Cliente();
-                cliente.codigo = codigo;
+                //alterar o produto
+                const cliente = new Cliente(codigo);
                 cliente.excluir()
                     .then(() => {
                         resposta.status(200).json({
-                            status: true,
-                            mensagem: "Cliente excluído com sucesso!",
+                            "status": true,
+                            "mensagem": "Produto excluído com sucesso!",
                         });
                     })
-                    .catch(erro => {
+                    .catch((erro) => {
                         resposta.status(500).json({
-                            status: false,
-                            mensagem: "Não foi possível excluir o cliente: " + erro.message,
+                            "status": false,
+                            "mensagem": "Não foi possível excluir o produto: " + erro.message
                         });
                     });
-            } else {
-                resposta.status(400).json({
-                    status: false,
-                    mensagem: "Informe um código válido de cliente.",
-                });
             }
-        } else {
-            resposta.status(400).json({
-                status: false,
-                mensagem: "Requisição inválida! Consulte a documentação da API.",
-            });
-        }
-    }
-
-    consultar(requisicao, resposta) {
-        resposta.type("application/json");
-        if (requisicao.method === "GET") {
-            let codigo = requisicao.params.codigo || "";
-            const cliente = new Cliente();
-            cliente.consultar(codigo)
-                .then(listaClientes => {
-                    resposta.status(200).json(listaClientes);
-                })
-                .catch(erro => {
-                    resposta.status(500).json({
-                        status: false,
-                        mensagem: "Erro ao consultar clientes: " + erro.message,
-                    });
-                });
-        } else {
-            resposta.status(400).json({
-                status: false,
-                mensagem: "Requisição inválida! Consulte a documentação da API.",
-            });
-        }
-    }
-}
-*/
-
-import Cliente from "../Modelo/cliente.js"; // Presume-se que o modelo Cliente exista.
-
-export default class ClienteCtrl {
-
-    gravar(requisicao, resposta) {
-        resposta.type("application/json");
-        if (requisicao.method === 'POST' && requisicao.is("application/json")) {
-            const { nome, endereco, cidade, cep, telefone } = requisicao.body;
-
-            if (nome && endereco && cidade && cep && telefone) {
-                const cliente = new Cliente(nome, endereco, cidade, cep, telefone);
-                cliente.gravar()
-                    .then(() => {
-                        resposta.status(200).json({
-                            status: true,
-                            mensagem: "Cliente adicionado com sucesso!",
-                            codigo: cliente.codigo
-                        });
-                    })
-                    .catch(erro => {
-                        resposta.status(500).json({
-                            status: false,
-                            mensagem: "Não foi possível incluir o cliente: xxx" + erro.message,
-                        });
-                    });
-            } else {
-                resposta.status(400).json({
-                    status: false,
-                    mensagem: "Informe todos os dados obrigatórios do cliente conforme a documentação da API.",
-                });
-            }
-        } else {
-            resposta.status(400).json({
-                status: false,
-                mensagem: "Requisição inválida! Consulte a documentação da API.",
-            });
-        }
-    }
-
-    editar(requisicao, resposta) {
-        resposta.type("application/json");
-        if ((requisicao.method === 'PUT' || requisicao.method === 'PATCH') && requisicao.is("application/json")) {
-            const codigo = parseInt(requisicao.params.codigo, 10);
-            const { nome, endereco, cidade, cep, telefone } = requisicao.body;
-
-            if (codigo > 0 && nome && endereco && cidade && cep && telefone) {
-                const cliente = new Cliente();
-                cliente.consultar(codigo)
-                    .then(listaClientes => {
-                        if (listaClientes.length === 0) {
-                            resposta.status(404).json({
-                                status: false,
-                                mensagem: "Cliente não encontrado.",
-                            });
-                        } else {
-                            const clienteAtualizado = new Cliente(nome, endereco, cidade, cep, telefone);
-                            clienteAtualizado.codigo = codigo;
-                            clienteAtualizado.editar()
-                                .then(() => {
-                                    resposta.status(200).json({
-                                        status: true,
-                                        mensagem: "Cliente atualizado com sucesso!",
-                                    });
-                                })
-                                .catch(erro => {
-                                    resposta.status(500).json({
-                                        status: false,
-                                        mensagem: "Não foi possível atualizar o cliente: " + erro.message,
-                                    });
-                                });
-                        }
-                    })
-                    .catch(erro => {
-                        resposta.status(500).json({
-                            status: false,
-                            mensagem: "Erro ao consultar cliente: " + erro.message,
-                        });
-                    });
-            } else {
-                resposta.status(400).json({
-                    status: false,
-                    mensagem: "Informe corretamente todos os dados do cliente conforme a documentação da API.",
-                });
-            }
-        } else {
-            resposta.status(400).json({
-                status: false,
-                mensagem: "Requisição inválida! Consulte a documentação da API.",
-            });
-        }
-    }
-
-    excluir(requisicao, resposta) {
-        resposta.type("application/json");
-        if (requisicao.method === 'DELETE') {
-            const codigo = parseInt(requisicao.params.codigo, 10);
-            if (codigo > 0) {
-                const cliente = new Cliente();
-                cliente.consultar(codigo)
-                    .then(listaClientes => {
-                        if (listaClientes.length === 0) {
-                            resposta.status(404).json({
-                                status: false,
-                                mensagem: "Cliente não encontrado.",
-                            });
-                        } else {
-                            cliente.codigo = codigo;
-                            cliente.excluir()
-                                .then(() => {
-                                    resposta.status(200).json({
-                                        status: true,
-                                        mensagem: "Cliente excluído com sucesso!",
-                                    });
-                                })
-                                .catch(erro => {
-                                    resposta.status(500).json({
-                                        status: false,
-                                        mensagem: "Não foi possível excluir o cliente: " + erro.message,
-                                    });
-                                });
-                        }
-                    })
-                    .catch(erro => {
-                        resposta.status(500).json({
-                            status: false,
-                            mensagem: "Erro ao consultar cliente: " + erro.message,
-                        });
-                    });
-            } else {
-                resposta.status(400).json({
-                    status: false,
-                    mensagem: "Informe um código válido de cliente.",
-                });
-            }
-        } else {
-            resposta.status(400).json({
-                status: false,
-                mensagem: "Requisição inválida! Consulte a documentação da API.",
-            });
-        }
-    }
-
-    consultar(requisicao, resposta) {
-        resposta.type("application/json");
-        if (requisicao.method === "GET") {
-            const codigo = requisicao.params.codigo || "";
-            const cliente = new Cliente();
-            cliente.consultar(codigo)
-                .then(listaClientes => {
-                    if (listaClientes.length === 0) {
-                        resposta.status(404).json({
-                            status: false,
-                            mensagem: "Nenhum cliente encontrado.",
-                        });
-                    } else {
-                        resposta.status(200).json(listaClientes);
+            else {
+                resposta.status(400).json(
+                    {
+                        "status": false,
+                        "mensagem": "Informe um código válido de um produto conforme documentação da API."
                     }
-                })
-                .catch(erro => {
-                    resposta.status(500).json({
-                        status: false,
-                        mensagem: "Erro ao consultar clientes: " + erro.message,
-                    });
-                });
-        } else {
+                );
+            }
+
+        }
+        else {
             resposta.status(400).json({
-                status: false,
-                mensagem: "Requisição inválida! Consulte a documentação da API.",
+                "status": false,
+                "mensagem": "Requisição inválida! Consulte a documentação da API."
             });
+
         }
     }
+
+    consultar(requisicao, resposta) {
+        resposta.type("application/json");
+        if (requisicao.method == "GET") {
+            let codigo = requisicao.params.codigo;
+            //evitar que código tenha valor undefined
+            if (isNaN(codigo)) {
+                codigo = "";
+            }
+
+            const cliente = new Cliente();
+            //método consultar retorna uma lista de produtos
+            cliente.consultar(codigo)
+                .then((listaClientes) => {
+                    resposta.status(200).json(listaClientes
+                        /*{
+                            "status": true,
+                            "listaProdutos": listaProdutos
+                        }*/
+                    );
+                })
+                .catch((erro) => {
+                    resposta.status(500).json(
+                        {
+                            "status": false,
+                            "mensagem": "Erro ao consultar produtos: " + erro.message
+                        }
+                    );
+                });
+
+        }
+        else {
+            resposta.status(400).json(
+                {
+                    "status": false,
+                    "mensagem": "Requisição inválida! Consulte a documentação da API."
+                }
+            );
+        }
+    }
+
 }

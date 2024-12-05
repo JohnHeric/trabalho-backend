@@ -1,5 +1,6 @@
 import ProdutoDAO from "../Persistencia/produtoDAO.js";
 import Categoria from "./categoria.js";
+
 export default class Produto{
     //atributos privados
     #codigo;
