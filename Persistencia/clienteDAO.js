@@ -26,7 +26,7 @@ export default class ClienteDAO {
         }
     }
 
-    async incluir(cliente) {
+    async gravar(cliente) {
         if (cliente instanceof Cliente) {
             const conexao = await conectar();
             const sql = `

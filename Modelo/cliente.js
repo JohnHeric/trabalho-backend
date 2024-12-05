@@ -2,6 +2,7 @@ import ClienteDAO from "../Persistencia/clienteDAO.js"; // Suponha que exista um
 
 export default class Cliente {
     // Atributos privados usando a sintaxe #
+    #codigo;
     #nome;
     #endereco;
     #cidade;
@@ -9,12 +10,21 @@ export default class Cliente {
     #telefone;
 
     // Construtor da classe
-    constructor(nome, endereco, cidade, cep, telefone) {
+    constructor(codigo=0, nome="", endereco="", cidade="", cep="", telefone="") {
+        this.#codigo = codigo;
         this.#nome = nome;
         this.#endereco = endereco;
         this.#cidade = cidade;
         this.#cep = cep;
         this.#telefone = telefone;
+    }
+
+    get codigo() {
+        return this.#codigo;
+    }
+
+    set codigo(value) {
+        this.#codigo = value;
     }
 
     // Métodos get e set para o atributo nome
@@ -65,23 +75,23 @@ export default class Cliente {
     // Método toJSON para conversão em JSON
     toJSON() {
         return {
-            nome: this.#nome,
-            endereco: this.#endereco,
-            cidade: this.#cidade,
-            cep: this.#cep,
-            telefone: this.#telefone
+            "nome": this.#nome,
+            "endereco": this.#endereco,
+            "cidade": this.#cidade,
+            "cep": this.#cep,
+            "telefone": this.#telefone
         };
     }
 
     // Métodos assíncronos para manipulação de dados
-    async gravar() {
+    async incluir() {
         const clienteDAO = new ClienteDAO();
-        await clienteDAO.gravar(this);
+        await clienteDAO.incluir(this);
     }
 
-    async editar() {
+    async consultar(termo) {
         const clienteDAO = new ClienteDAO();
-        await clienteDAO.editar(this);
+        return await clienteDAO.consultar(termo);
     }
 
     async excluir() {
@@ -89,8 +99,8 @@ export default class Cliente {
         await clienteDAO.excluir(this);
     }
 
-    async consultar(termo) {
+    async alterar() {
         const clienteDAO = new ClienteDAO();
-        return await clienteDAO.consultar(termo);
+        await clienteDAO.editar(this);
     }
 }
