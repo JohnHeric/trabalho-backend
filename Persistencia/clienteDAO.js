@@ -1,4 +1,3 @@
-//DAO - Data Access Object
 import Cliente from "../Modelo/cliente.js";
 
 import conectar from "./Conexao.js";
@@ -10,7 +9,7 @@ export default class ClienteDAO {
     async init() {
         try 
         {
-            const conexao = await conectar(); //retorna uma conexão
+            const conexao = await conectar();
             const sql = `
             CREATE TABLE IF NOT EXISTS cliente(
                 cli_codigo INT NOT NULL AUTO_INCREMENT,
@@ -40,10 +39,10 @@ export default class ClienteDAO {
                 cliente.endereco,
                 cliente.cidade,
                 cliente.cep,
-            ]; //dados do produto
+            ];
             const resultado = await conexao.execute(sql, parametros);
             cliente.codigo = resultado[0].insertId;
-            await conexao.release(); //libera a conexão
+            await conexao.release();
         }
     }
 
@@ -59,14 +58,13 @@ export default class ClienteDAO {
                 cliente.cidade,
                 cliente.cep,
                 cliente.codigo
-            ]; //dados do produto
+            ];
             await conexao.execute(sql, parametros);
-            await conexao.release(); //libera a conexão
+            await conexao.release();
         }
     }
 
     async consultar(termo) {
-        //resuperar as linhas da tabela produto e transformá-las de volta em produtos
         const conexao = await conectar();
         let sql = "";
         let parametros = [];
@@ -102,9 +100,9 @@ export default class ClienteDAO {
             const sql = `DELETE FROM cliente WHERE cli_codigo = ?`;
             let parametros = [
                 cliente.codigo
-            ]; //dados do produto
+            ];
             await conexao.execute(sql, parametros);
-            await conexao.release(); //libera a conexão
+            await conexao.release();
         }
     }
 }

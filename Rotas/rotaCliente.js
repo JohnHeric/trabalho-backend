@@ -1,5 +1,5 @@
-import { Router } from "express"; // micro-aplicação HTTP
-import ClienteCtrl from "../Controle/clienteCtrl.js"; // Controlador de cliente
+import { Router } from "express";
+import ClienteCtrl from "../Controle/clienteCtrl.js";
 
 const clienteCtrl = new ClienteCtrl();
 const rotaCliente = Router();

@@ -1,4 +1,3 @@
-//DAO - Data Access Object
 import Produto from "../Modelo/produto.js";
 import Categoria from "../Modelo/categoria.js";
 
@@ -11,7 +10,7 @@ export default class ProdutoDAO {
     async init() {
         try 
         {
-            const conexao = await conectar(); //retorna uma conexão
+            const conexao = await conectar();
             const sql = `
             CREATE TABLE IF NOT EXISTS produto(
                 prod_codigo INT NOT NULL AUTO_INCREMENT,
@@ -51,7 +50,7 @@ export default class ProdutoDAO {
             ]; //dados do produto
             const resultado = await conexao.execute(sql, parametros);
             produto.codigo = resultado[0].insertId;
-            await conexao.release(); //libera a conexão
+            await conexao.release();
         }
     }
 
@@ -70,13 +69,12 @@ export default class ProdutoDAO {
                 produto.dataValidade,
                 produto.categoria.codigo,
                 produto.codigo
-            ]; //dados do produto
+            ];
             await conexao.execute(sql, parametros);
-            await conexao.release(); //libera a conexão
+            await conexao.release();
         }
     }
     async consultar(termo) {
-        //resuperar as linhas da tabela produto e transformá-las de volta em produtos
         const conexao = await conectar();
         let sql = "";
         let parametros = [];
@@ -120,7 +118,7 @@ export default class ProdutoDAO {
                 produto.codigo
             ]; //dados do produto
             await conexao.execute(sql, parametros);
-            await conexao.release(); //libera a conexão
+            await conexao.release();
         }
     }
 }

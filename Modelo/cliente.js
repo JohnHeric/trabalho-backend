@@ -63,8 +63,6 @@ export default class Cliente
         }
     }
 
-    //Verificar se é incluir ou gravar o nome
-    //Ver no cliente DAO tbm
     async gravar(){
         const clienteDAO = new ClienteDAO();
         await clienteDAO.gravar(this);
